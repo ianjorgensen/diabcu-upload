@@ -6,7 +6,7 @@ var port = process.argv[2] || 9000;
 
 server.get('/', function(request, response) {
 	response.writeHead(200, {'content-type':'application/json'});
-	response.end(readings.toString());
+	response.end(JSON.stringify(readings, null, '\t'));
 });
 
 server.post('/upload', function(request, response) {
