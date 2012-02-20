@@ -4,10 +4,15 @@ var buffoon = require('buffoon');
 var readings = {};
 var port = process.argv[2] || 9000;
 
+server.get('/', function(request, response) {
+	response.writeHead(200, {'content-type':'application/json'});
+	response.end(readings.toString());
+});
+
 server.post('/upload', function(request, response) {
 	buffoon.json(request, function(err, data) {
 		readings = data;
-		console.log(new Buffer("SGVsbG8gV29ybGQ=", 'base64').toString('ascii'))
+		//console.log(new Buffer(, 'base64').toString('ascii'))
 		response.writeHead(200);
 		response.end('ok');
 	});
