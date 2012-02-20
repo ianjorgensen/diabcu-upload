@@ -19,9 +19,9 @@ server.post('/upload', function(request, response) {
 	buffoon.json(request, function(err, data) {
 		readings = data;
 		if (data.Attachments) {
-			content = new Buffer(data.Attachments.Content, 'base64').toString('ascii');
+			content = new Buffer(data.Attachments[0].Content, 'base64').toString('ascii');
 		}
-		
+
 		response.writeHead(200);
 		response.end('ok');
 	});
