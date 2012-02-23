@@ -22,6 +22,7 @@ var judge = function(readings, criteria) {
 	return bad/readings.length;
 };
 var fill = function(readings, criteria) {
+	$('#' + dateId(new Date())).css({'background': 'blue'});
 	$.each(readings, function(dayId,readings) {
 		var veredict = judge(readings, criteria);
 		var color = 'green';
@@ -35,8 +36,6 @@ var fill = function(readings, criteria) {
 
 		$('#' + dayId).css({'background': color});
 	});
-
-	$('#' + dateId(new Date())).css({'background': 'blue'});
 }
 
 $(function() {
