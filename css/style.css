@@ -10,7 +10,7 @@
 		border-color: #F3F6FC !important;
 	}
 	.dot:hover {
-		border-color: #C4C4C4 !important;
+		border-color: #999 !important;
 	}
 	.future:hover {
 		border-color: #F3F6FC !important;
@@ -42,7 +42,7 @@
 		width: 43px; /* media queries change the size of the circles? */
 		height: 44px;
 		margin: 10px;
-		border-radius: 35px;
+		border-radius: 35px;/*14px;*/
 	}
 	.day text {
 		width: 47px;
