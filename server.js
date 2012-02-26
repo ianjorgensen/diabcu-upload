@@ -9,10 +9,11 @@ var data = require('./lib/dummy');
 var calendar = require('./lib/calendar');
 var diabcu = require('./lib/diabcu');
 var db = require('./lib/data').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu');
+
+//var db = require('mongojs').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu',['data']);
 var postmark = require('postmark')('2bae114c-d0c9-4dbc-a55c-dd0f66f1c8d6');
-    
+
 var port = process.argv[2] || 9000;
-var readings = {};
 
 var onerror = function(err) {
 	response.writeHead(500);
@@ -38,7 +39,7 @@ server.post('/upload', function(request, response) {
 		        From: 'upload@diabcu.com', 
 		        To: mail.From, 
 		        Subject: 'Nice! Readings are flowing in', 
-		        TextBody: 'You uploaded readings and we created frames, you frame is http://www.diabcu.com/' + mail.From + ' \n Keep them comming.'
+		        TextBody: 'You uploaded readings and we created frames, your frame is http://www.diabcu.com/' + mail.From + '\nKeep them comming!'
     			});	
 				}
 				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
@@ -52,7 +53,7 @@ server.post('/upload', function(request, response) {
 });
 
 server.get('/upload/dummy', function(request, response) {
-	readings = diabcu.parse(data.mail);
+	var readings = diabcu.parse(data.mail);
 	db.save({'mail.From': data.mail.From}, {mail:data.mail, readings:readings}, common.fork(onerror,
 		function() {
 			response.writeHead(200);
@@ -96,6 +97,10 @@ server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
 			db.one({'mail.From' : id}, next);
 		},
 		function(data, next) {
+			if (!data) {
+				onerror('no data');
+				return;
+			}
 			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
 		},
 		function(src) {
