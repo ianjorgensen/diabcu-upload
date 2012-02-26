@@ -30,7 +30,7 @@ server.post('/upload', function(request, response) {
 
 		common.step([
 			function(next) {
-				db.findOne({'mail.From': mail.From},{_id:1}, next)
+				db.data.findOne({'mail.From': mail.From},{_id:1}, next)
 			},
 			function(id, next) {
 				if (!id) {
@@ -41,7 +41,7 @@ server.post('/upload', function(request, response) {
 		        TextBody: 'You uploaded readings and we created frames, you frame is http://www.diabcu.com/' + mail.From + ' \n Keep them comming.'
     			});	
 				}
-				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
+				db.data.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
 			},
 			function() {
 				response.writeHead(200);
