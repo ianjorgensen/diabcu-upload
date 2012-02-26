@@ -18,7 +18,7 @@ var onerror = function(err) {
 	response.writeHead(500);
 	response.end(err.message);
 };
-
+//todo: add logging to see what is happending
 server.get('/', function(request, response) {
 	response.writeHead(200, {'content-type':'text/html'});	
 	response.end('Send a mail from glooko app to upload@diabcu.com and you are done!');
@@ -26,11 +26,11 @@ server.get('/', function(request, response) {
 
 server.post('/upload', function(request, response) {
 	buffoon.json(request, function(err, mail) {
-		readings = diabcu.parse(mail);
+		var readings = diabcu.parse(mail);
 
 		common.step([
 			function(next) {
-				db.data.findOne({'mail.From': mail.From},{_id:1}, next)
+				db.one({'mail.From': mail.From},{_id:1}, next)
 			},
 			function(id, next) {
 				if (!id) {
@@ -41,7 +41,7 @@ server.post('/upload', function(request, response) {
 		        TextBody: 'You uploaded readings and we created frames, you frame is http://www.diabcu.com/' + mail.From + ' \n Keep them comming.'
     			});	
 				}
-				db.data.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
+				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
 			},
 			function() {
 				response.writeHead(200);
