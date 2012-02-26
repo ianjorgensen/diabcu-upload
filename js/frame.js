@@ -53,8 +53,8 @@ var fill = function(readings, criteria) {
 		$('#' + dayId).click(function(){
 			var message = '';
 
-			if(readings.length) {
-				message = new Date(readings[0].timestamp).toString().substring(0,15) + '\n\n';
+			if(readings.length) { 
+				message = new Date(readings[0].timestamp).toUTCString().substring(0,15) + '\n\n';
 			}
 
 			for(var i = readings.length - 1; i >= 0; i--) {
