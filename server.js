@@ -1,77 +1,106 @@
 var server = require('router').create();
 var buffoon = require('buffoon');
 var _ = require('underscore');
-var file = require('./file').file;
-var data = require('./data');
-var calendar = require('./calendar');
+var aejs = require('async-ejs');
+var common = require('common');
+
+var file = require('./lib/file').file;
+var data = require('./lib/dummy');
+var calendar = require('./lib/calendar');
+var diabcu = require('./lib/diabcu');
+var db = require('./lib/data').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu');
 
 var port = process.argv[2] || 9000;
-var email = {};
 var readings = {};
 
-var parse = function(mail) {
-	var readings = {};
-	if (mail.Attachments && mail.Attachments[0].ContentType.toLowerCase() === 'text/csv') {
-		readings.raw = new Buffer(mail.Attachments[0].Content, 'base64').toString('ascii').split('\n');
-		
-		readings.data = _.compact(readings.raw.map(function(row){
-			var cells = row.split(',');
-			
-			if(cells.length !== 5) {
-				return;
-			}
-
-			return {
-				timestamp: new Date((cells[0] + ',' + cells[1] + ' GMT').replace(/"/g,'')),
-				bg: cells[2] 
-			}
-		}));
-
-		readings.day = _.groupBy(readings.data, function(reading) {
-			return calendar.dateId(reading.timestamp);
-		});
-
-	}
-	return readings;
+var onerror = function(err) {
+	response.writeHead(500);
+	response.end(err.message);
 };
 
 server.get('/', function(request, response) {
-	response.writeHead(200, {'content-type':'application/json'});
-	response.end(JSON.stringify(email, null, '\t'));
+	response.writeHead(200, {'content-type':'text/html'});	
+	response.end('Send a mail from glooko app to upload@diabcu.com and you are done!');
 });
-server.get('/readings', function(request, response) {
-	response.writeHead(200, {'content-type':'application/json'});
-	response.end(JSON.stringify(readings.data, null, '\t'));
-});
-server.get('/readings/day', function(request, response) {
-	response.writeHead(200, {'content-type':'application/json'});
-	response.end(JSON.stringify(readings.day, null, '\t'));
-});
-server.get('/frame', function(request, response) {
-	response.writeHead(200, {'content-type':'text/html'});
-	var table = calendar.table(_.last(_.keys(readings.day)));
-	response.end(table);
-});
-server.get('/jquery.js', file('./jquery.js'));
-server.get('/frame.js', file('./frame.js'));
-server.get('/style.css', file('./style.css'));
+
 server.post('/upload', function(request, response) {
 	buffoon.json(request, function(err, mail) {
-		this.mail = mail;
-		readings = parse(mail);
-		response.writeHead(200);
-		response.end('ok');
+		readings = diabcu.parse(mail);
+
+		db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, common.fork(onerror,
+			function() {
+				response.writeHead(200);
+				response.end('ok');
+			})
+		);
 	});
 });
+
+server.get('/upload/dummy', function(request, response) {
+	readings = diabcu.parse(data.mail);
+	db.save({'mail.From': data.mail.From}, {mail:data.mail, readings:readings}, common.fork(onerror,
+		function() {
+			response.writeHead(200);
+			response.end('ok');
+		})
+	);
+});
+
+server.get('/{id}/mail', function(request, response) {
+	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+		function(data) {
+			response.writeHead(200, {'content-type':'application/json'});
+			response.end(JSON.stringify(data.mail, null, '\t'));		
+		})
+	);
+});
+
+server.get('/{id}/readings', function(request, response) {
+	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+		function(data) {
+			response.writeHead(200, {'content-type':'application/json'});
+			response.end(JSON.stringify(data.readings.data, null, '\t'));		
+		})
+	);
+});
+
+server.get('/{id}/readings/day', function(request, response) {
+	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+		function(data) {
+			response.writeHead(200, {'content-type':'application/json'});
+			response.end(JSON.stringify(data.readings.day, null, '\t'));		
+		})
+	);
+});
+
+server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
+	var id = request.params[1];
+
+	common.step([
+		function(next) {
+			db.one({'mail.From' : id}, next);
+		},
+		function(data, next) {
+			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
+		},
+		function(src) {
+			response.writeHead(200, {'content-type':'text/html'});	
+			response.end(src);
+		}
+	], onerror);
+});
+
+server.get('/js/*', file('./js/{*}'));
+
+server.get('/css/*', file('./css/{*}'));
+
 server.all('*', function(request, response) {
 	response.writeHead(404);
 	response.end('404');
 });
 
 server.listen(port);
-console.log('server running on port',port);
 
-email = data.mail;
-readings = parse(email);
+console.log('server running on port',port);
 
 process.on('uncaughtException', function(err) { console.log(err.stack) });
