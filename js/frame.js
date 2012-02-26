@@ -1,10 +1,10 @@
 var values;
 var criteria = {
-	low: 3.5,
-	high: 11,
+	low: 4,
+	high: 10.5,
 	good: 0.18, // percentage of results that are bad
 	ok: 0.35, 
-	bad: 0.6
+	bad: 0.5
 };
 
 var dateId = function(date) {
@@ -49,16 +49,30 @@ var fill = function(readings, criteria) {
 
 		$('#' + dayId).css({'background': color});
 		$('#' + dayId).css({'border-color': color});
-		
+		$('#' + dayId).unbind('click');
+		$('#' + dayId).click(function(){
+			var message = '';
+
+			if(readings.length) {
+				message = new Date(readings[0].timestamp).toString().substring(0,15) + '\n\n';
+			}
+
+			for(var i = readings.length - 1; i >= 0; i--) {
+				message += readings[i].bg + '    ' + new Date(readings[i].timestamp).toTimeString().substring(0,5) + '\n';
+			}
+
+			alert(message);
+			return;
+		});
 	});
-}
+};
 
 var load = function() {
 	$.get('/jorgensen.ian@gmail.com/readings/day', function(readings) {
   	values = readings;
   	fill(readings, criteria);
 	});
-}
+};
 
 $(function() {
 	load();

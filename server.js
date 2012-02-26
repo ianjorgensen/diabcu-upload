@@ -10,6 +10,7 @@ var calendar = require('./lib/calendar');
 var diabcu = require('./lib/diabcu');
 var db = require('./lib/data').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu');
 
+// move to crossmania
 //var db = require('mongojs').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu',['data']);
 var postmark = require('postmark')('2bae114c-d0c9-4dbc-a55c-dd0f66f1c8d6');
 
