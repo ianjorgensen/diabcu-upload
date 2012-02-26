@@ -34,14 +34,14 @@ server.post('/upload', function(request, response) {
 				db.one({'mail.From': mail.From},{_id:1}, next)
 			},
 			function(id, next) {
-				if (!id) {
+				//if (!id) {
 					postmark.send({
 		        From: 'upload@diabcu.com', 
 		        To: mail.From, 
 		        Subject: 'Nice! Readings are flowing in', 
 		        TextBody: 'You uploaded readings and we created frames, your frame is http://www.diabcu.com/' + mail.From + '\nKeep them comming!'
     			});	
-				}
+				//}
 				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
 			},
 			function() {
