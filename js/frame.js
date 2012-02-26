@@ -19,6 +19,10 @@ var judge = function(readings, criteria) {
 		}
 	});
 	
+	if (!bad && !readings.length) {
+		return -1;
+	}
+
 	return bad/readings.length;
 };
 
@@ -31,6 +35,7 @@ var colors = {
 
 var fill = function(readings, criteria) {
 	$('#' + dateId(new Date())).css({'border-color': colors.today});
+	
 	$.each(readings, function(dayId,readings) {
 		var veredict = judge(readings, criteria);
 		var color = colors.good;
@@ -48,11 +53,16 @@ var fill = function(readings, criteria) {
 	});
 }
 
-$(function() {
+var load = function() {
 	$.get('/jorgensen.ian@gmail.com/readings/day', function(readings) {
   	values = readings;
   	fill(readings, criteria);
 	});
+}
+
+$(function() {
+	load();
+	setTimeout(load, 10000);
 });
 
 // When ready...
