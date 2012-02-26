@@ -20,6 +20,7 @@ var onerror = function(err) {
 	response.end(err.message);
 };
 //todo: add logging to see what is happending
+//todo: fix on error
 server.get('/', function(request, response) {
 	response.writeHead(200, {'content-type':'text/html'});	
 	response.end('Send a mail from glooko app to upload@diabcu.com and you are done!');

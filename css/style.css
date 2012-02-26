@@ -50,7 +50,7 @@
 		display: block;
 		margin: 10px;
 		text-align: center;
-		color: #E0E0E0;
+		color: #8193B6;
 		font-family: helvetica;
 		font-size: 13px;
 		padding-left: 1px;
@@ -64,4 +64,37 @@
 	}
 	.clear {
 		clear: both;
+	}
+	/* Smartphones (portrait) ----------- */
+	@media only screen and (max-width : 320px) {
+	/*@media screen and (max-width: 510px) {*/
+		.day text {
+			width: 19px;
+		}
+		.dot {
+			width: 22px;
+			margin: 6px;
+			height: 22px;
+		}
+		.first {
+			margin-left: 5px !important;
+		}
+	}
+
+	@media only screen and (min-width : 321px) {
+	/*@media screen and (orientation:landscape) {*/
+		.day text {
+			width: 40px;
+		}
+		.dot {
+			width: 35px;
+			margin: 10px;
+			height: 35px;
+		}
+		.first {
+			margin-left: 10px !important;
+		}
+		.sunday {
+			margin-left: 10px;
+		}
 	}

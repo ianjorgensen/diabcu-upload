@@ -54,4 +54,13 @@ $(function() {
   	fill(readings, criteria);
 	});
 });
+
+// When ready...
+window.addEventListener("load",function() {
+  // Set a timeout...
+  setTimeout(function(){
+    // Hide the address bar!
+    window.scrollTo(0, 1);
+  }, 0);
+});
 //fill(values,{low: 3.5,high: 10.5,good: 0.15,ok: 0.3,bad: 0.5});
