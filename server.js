@@ -9,7 +9,8 @@ var data = require('./lib/dummy');
 var calendar = require('./lib/calendar');
 var diabcu = require('./lib/diabcu');
 var db = require('./lib/data').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu');
-
+var postmark = require('postmark')('2bae114c-d0c9-4dbc-a55c-dd0f66f1c8d6');
+    
 var port = process.argv[2] || 9000;
 var readings = {};
 
@@ -27,12 +28,26 @@ server.post('/upload', function(request, response) {
 	buffoon.json(request, function(err, mail) {
 		readings = diabcu.parse(mail);
 
-		db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, common.fork(onerror,
+		common.step([
+			function(next) {
+				db.findOne({'mail.From': mail.From},{_id:1}, next)
+			},
+			function(id, next) {
+				if (!id) {
+					postmark.send({
+		        From: 'upload@diabcu.com', 
+		        To: mail.From, 
+		        Subject: 'Nice! Readings are flowing in', 
+		        TextBody: 'You uploaded readings and we created frames, you frame is http://www.diabcu.com/' + mail.From + ' \n Keep them comming.'
+    			});	
+				}
+				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
+			},
 			function() {
 				response.writeHead(200);
 				response.end('ok');
-			})
-		);
+			}]
+		,onerror);
 	});
 });
 
