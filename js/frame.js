@@ -1,20 +1,32 @@
 var values;
 var criteria = {
-	low: 4,
-	high: 10.5,
+	mmoll : {
+		low: 4,
+		high: 10.5	
+	},
+	mgdl : {
+		low: 4 * 18,
+		high: 10.5 * 18	
+	},
 	good: 0.18, // percentage of results that are bad
 	ok: 0.35, 
 	bad: 0.5
 };
+//mg/dl = 18 × mmol/l
 
 var dateId = function(date) {
 	return date.getDate() + '-' + date.getMonth() + '-' + date.getFullYear();
 };
 var judge = function(readings, criteria) {
 	var bad = 0;
+	
+	var range = criteria.mmoll;
+	if (readings[0].bg > 32)
+		range = criteria.mgdl;
+	
 	//console.log(readings);
 	$.each(readings, function(i,reading) {
-		if(reading.bg > criteria.high || reading.bg < criteria.low) {
+		if(reading.bg > range.high || reading.bg < range.low) {
 			bad = bad + 1;
 		}
 	});
@@ -36,6 +48,7 @@ var colors = {
 var fill = function(readings, criteria) {
 	$('#' + dateId(new Date())).css({'border-color': colors.today});
 	
+	var criteria = 
 	$.each(readings, function(dayId,readings) {
 		var veredict = judge(readings, criteria);
 		var color = colors.good;
