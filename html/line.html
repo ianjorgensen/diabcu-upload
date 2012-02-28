@@ -1,0 +1,38 @@
+<html>
+  <head>
+  <script src='/js/morris.min.js'></script>
+  <script src='/js/jquery.js'></script>
+  <script src='/js/raphael-2.0.2.min.js'></script>
+  <script>
+  // quarterly data, custom colors, skinny lines
+  $(function() {
+    fill();  
+  });
+  var fill = function() {
+    $.get('/jorgensen.ian@gmail.com/readings/day', function(readings) {
+      var data = [];
+
+      for(var i in readings['3-0-2012']) {
+        data.push( {
+          y: i,
+          a: readings['3-0-2012'][i].bg
+        });
+      }
+      console.log(readings,data);
+
+      Morris.Line({
+        element: 'quarterly',
+        data: data,
+        xkey: 'y',
+        ykeys: ['a'],
+        labels: ['BG']
+      });
+    });
+  }
+  
+  </script>
+  </head>
+  <body>
+    <div class="graph" id="quarterly"></div>
+  </body>
+</html>

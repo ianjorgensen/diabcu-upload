@@ -102,6 +102,15 @@
 	#target #fields {
 		padding: 10px;	
 	}
+	.num {
+		padding-top: 2px;
+		padding-left: 1px;
+		font-size: 13px;
+		font-family: helvetica;
+		color: #8193B6;
+		text-align: center;
+		padding-right: 1px;
+	}
 	a {
 		color: blue;
 		cursor: pointer;

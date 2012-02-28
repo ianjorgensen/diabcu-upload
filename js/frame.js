@@ -58,6 +58,54 @@ var range = function(criteria, reading) {
 		range = criteria.target;
 	return range;
 };
+
+// lows highs perfects 
+var num = function(readings, criteria, type) {
+	$.each(readings, function(dayId,readings) {
+		var rango = range(criteria, readings[0]);
+
+		if (type === 'percentage') {
+			$('#' + dayId + ' .num').text(100 - parseInt(judge(readings, rango) * 100));	
+			return;
+		}
+		if (type === 'count') {
+			$('#' + dayId + ' .num').text(readings.length);	
+			return;
+		}
+		if (type === 'low') {
+			var count = 0;
+			for(var i in readings) {
+				var reading = readings[i];
+
+				if(reading.bg < rango.low) {
+					count += 1;
+				}
+			}
+			$('#' + dayId + ' .num').text(count);	
+			return;
+		}
+		if (type === 'high') {
+			var count = 0;
+			for(var i in readings) {
+				var reading = readings[i];
+
+				if(reading.bg > rango.high) {
+					count += 1;
+				}
+			}
+			$('#' + dayId + ' .num').text(count);	
+			return;
+		}
+		$('#' + dayId + ' .num').text('');	
+	});
+};
+
+/*todo add different choice of numbers in bubbles, number of lows or highs, 
+number of readings taken, 
+average, 
+swings i.e. standard deviation, 
+percentage within range.*/
+
 var fill = function(readings, criteria) {
 	if (state !== 'fill') {
 		lows(readings,criteria, state);
@@ -186,6 +234,24 @@ $(function() {
 		state = 'fill';
 		fill(values, criteria);
 	});
+
+
+	$('#lowsnum').click(function() {
+		num(values,criteria,'low');
+	});
+	$('#highsnum').click(function() {
+		num(values,criteria,'high');
+	});
+	$('#percentagenum').click(function() {
+		num(values,criteria,'percentage');
+	});
+	$('#countnum').click(function() {
+		num(values,criteria,'count');
+	});
+	$('#plainnum').click(function() {
+		num(values,criteria,'');
+	});
+
 	setTimeout(load, 10000);
 });
 

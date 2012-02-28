@@ -16,9 +16,11 @@ var postmark = require('postmark')('2bae114c-d0c9-4dbc-a55c-dd0f66f1c8d6');
 
 var port = process.argv[2] || 9000;
 
-var onerror = function(err) {
-	response.writeHead(500);
-	response.end(err.message);
+var onerror = function(response) {
+	return function(err) {
+		response.writeHead(500);
+		response.end(err.message);
+	}
 };
 //todo: add logging to see what is happending
 //todo: fix on error
@@ -41,7 +43,7 @@ server.post('/upload', function(request, response) {
 		        From: 'upload@diabcu.com', 
 		        To: mail.From, 
 		        Subject: 'Nice! Readings are flowing in', 
-		        TextBody: 'You uploaded readings and we created frames, your frame is http://www.diabcu.com/' + mail.From + '\nKeep them comming!'
+		        TextBody: 'You uploaded readings and we created a frame for you. Check it out http://www.diabcu.com/' + mail.From + '\nKeep them comming!'
     			});	
 				//}
 				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
@@ -50,13 +52,13 @@ server.post('/upload', function(request, response) {
 				response.writeHead(200);
 				response.end('ok');
 			}]
-		,onerror);
+		,onerror(response));
 	});
 });
 
 server.get('/upload/dummy', function(request, response) {
 	var readings = diabcu.parse(data.mail);
-	db.save({'mail.From': data.mail.From}, {mail:data.mail, readings:readings}, common.fork(onerror,
+	db.save({'mail.From': data.mail.From}, {mail:data.mail, readings:readings}, common.fork(onerror(response),
 		function() {
 			response.writeHead(200);
 			response.end('ok');
@@ -65,7 +67,7 @@ server.get('/upload/dummy', function(request, response) {
 });
 
 server.get('/{id}/mail', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.mail, null, '\t'));		
@@ -74,7 +76,7 @@ server.get('/{id}/mail', function(request, response) {
 });
 
 server.get('/{id}/readings', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.readings.data, null, '\t'));		
@@ -83,7 +85,7 @@ server.get('/{id}/readings', function(request, response) {
 });
 
 server.get('/{id}/readings/day', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror,
+	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.readings.day, null, '\t'));		
@@ -100,7 +102,7 @@ server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
 		},
 		function(data, next) {
 			if (!data) {
-				onerror('no data');
+				onerror(response)('no data');
 				return;
 			}
 			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
@@ -109,12 +111,14 @@ server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
 			response.writeHead(200, {'content-type':'text/html'});	
 			response.end(src);
 		}
-	], onerror);
+	], onerror(response));
 });
 
 server.get('/js/*', file('./js/{*}'));
 
 server.get('/css/*', file('./css/{*}'));
+
+server.get('/html/*', file('./html/{*}'));
 
 server.all('*', function(request, response) {
 	response.writeHead(404);
