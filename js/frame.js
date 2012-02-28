@@ -163,7 +163,7 @@ var lows = function(readings, criteria, high) {
 
 var uno = false;
 var load = function() {
-	$.get('/jorgensen.ian@gmail.com/readings/day', function(readings) {
+	$.get(window.location.pathname + '/readings/day', function(readings) {
   	values = readings;
   	fill(readings, criteria);
   	uno = true;
