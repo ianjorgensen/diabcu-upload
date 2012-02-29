@@ -38,11 +38,13 @@ server.post('/upload', function(request, response) {
 				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
 			},
 			function(data) {
+				console.log(data);
+
 				postmark.send({
 		        From: 'upload@diabcu.com', 
 		        To: mail.From, 
 		        Subject: 'Nice! Readings are flowing in', 
-		        TextBody: 'You uploaded readings and we created a frame for you. Check it out http://www.diabcu.com/i' + data._id + '\nKeep them comming!'
+		        TextBody: 'You uploaded readings and we created a frame for you. Check it out http://www.diabcu.com/i' + data['_id'] + '\nKeep them comming!'
     			});	
 
 				response.writeHead(200);
