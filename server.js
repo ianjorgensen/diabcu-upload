@@ -35,20 +35,16 @@ server.post('/upload', function(request, response) {
 
 		common.step([
 			function(next) {
-				db.one({'mail.From': mail.From},{_id:1}, next)
+				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
 			},
-			function(id, next) {
-				//if (!id) {
-					postmark.send({
+			function(data) {
+				postmark.send({
 		        From: 'upload@diabcu.com', 
 		        To: mail.From, 
 		        Subject: 'Nice! Readings are flowing in', 
-		        TextBody: 'You uploaded readings and we created a frame for you. Check it out http://www.diabcu.com/' + mail.From + '\nKeep them comming!'
+		        TextBody: 'You uploaded readings and we created a frame for you. Check it out http://www.diabcu.com/i' + data._id + '\nKeep them comming!'
     			});	
-				//}
-				db.save({'mail.From': mail.From}, {mail:mail, readings:readings}, next);
-			},
-			function() {
+
 				response.writeHead(200);
 				response.end('ok');
 			}]
@@ -67,7 +63,13 @@ server.get('/upload/dummy', function(request, response) {
 });
 
 server.get('/{id}/mail', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
+	var query;
+	if (request.params.id.indexOf('@') === -1)
+		query = {'_id': request.params.id.slice(1)};
+	else
+		query = {'mail.From' : request.params.id};
+
+	db.one(query, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.mail, null, '\t'));		
@@ -76,7 +78,13 @@ server.get('/{id}/mail', function(request, response) {
 });
 
 server.get('/{id}/readings', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
+	var query;
+	if (request.params.id.indexOf('@') === -1)
+		query = {'_id': request.params.id.slice(1)};
+	else
+		query = {'mail.From' : request.params.id};
+
+	db.one(query, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.readings.data, null, '\t'));		
@@ -85,7 +93,13 @@ server.get('/{id}/readings', function(request, response) {
 });
 
 server.get('/{id}/readings/day', function(request, response) {
-	db.one({'mail.From' : request.params.id}, common.fork(onerror(response),
+	var query;
+	if (request.params.id.indexOf('@') === -1)
+		query = {'_id': request.params.id.slice(1)};
+	else
+		query = {'mail.From' : request.params.id};
+
+	db.one(query, common.fork(onerror(response),
 		function(data) {
 			response.writeHead(200, {'content-type':'application/json'});
 			response.end(JSON.stringify(data.readings.day, null, '\t'));		
@@ -93,12 +107,21 @@ server.get('/{id}/readings/day', function(request, response) {
 	);
 });
 
+server.get('/js/*', file('./js/{*}'));
+
+server.get('/css/*', file('./css/{*}'));
+
+server.get('/html/*', file('./html/{*}'));
+
 server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
 	var id = request.params[1];
 
 	common.step([
 		function(next) {
-			db.one({'mail.From' : id}, next);
+			if (id.indexOf('@') === -1)
+				db.one({'_id' : id}, next);
+			else
+				db.one({'mail.From' : id}, next);
 		},
 		function(data, next) {
 			if (!data) {
@@ -114,11 +137,24 @@ server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
 	], onerror(response));
 });
 
-server.get('/js/*', file('./js/{*}'));
-
-server.get('/css/*', file('./css/{*}'));
-
-server.get('/html/*', file('./html/{*}'));
+server.get('/i{id}', function(request, response) {
+	common.step([
+		function(next) {
+			db.one({'_id' : request.params.id}, next);
+		},
+		function(data, next) {
+			if (!data) {
+				onerror(response)('no data');
+				return;
+			}
+			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
+		},
+		function(src) {
+			response.writeHead(200, {'content-type':'text/html'});	
+			response.end(src);
+		}
+	], onerror(response));
+});
 
 server.all('*', function(request, response) {
 	response.writeHead(404);
