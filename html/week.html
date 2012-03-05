@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>Diabcu Frame</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css">
+	<link href="/css/week.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="http://www.antarcticstation.org/assets/js/ios-orientationchange-fix.js"></script>
+	<script src="/js/jquery.js" ></script>
+	<script src="/js/underscore.js" ></script>
+	<script src="/js/common.js" ></script>
+	<script src="/js/date.js" ></script>
+	<script src="/js/week.js" ></script>
+
+	<script>
+	$(function() {
+		var url = '/' + window.location.pathname.split('/')[1] + '/readings';
+
+		var loadWeeks = function(data) {
+			var weeks = _.groupBy(data.data, function(reading) {
+				return reading.weekId;
+			});
+			
+			var dots = diabcu.weeks(weeks, data.unit);
+
+			$.each(dots, function(i,dot) {
+				$('#frame').append(dot);
+			});
+
+			$('#' + getWeekId(new Date())).css({'border-color': diabcu.colors.today});
+		};
+
+		var loadDays = function(data) {
+			var days = _.groupBy(data.data, function(reading) {
+				return reading.dayId;
+			});
+			
+			var dots = diabcu.days(days, data.unit);
+
+			$.each(dots, function(i,dot) {
+				$('#frame').append(dot);
+			});
+		};
+
+		$.get(url, function(data) {
+			loadDays(data);
+		});
+	});
+	</script>
+	<!-- Modernizr (rest of the scripts bottom of page) -->
+	<script src="http://www.antarcticstation.org/assets/js/modernizr.js"></script>
+</head>
+<body>
+	<div id='frame'>
+	</div>
+</body>
+</html>

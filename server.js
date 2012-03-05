@@ -10,7 +10,11 @@ var calendar = require('./lib/calendar');
 var diabcu = require('./lib/diabcu');
 var db = require('./lib/data').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu');
 
+// refactor
+// draw graphs
+// connecting data
 // move to crossmania
+
 //var db = require('mongojs').connect('mongodb://root:root@staff.mongohq.com:10019/diabcu',['data']);
 var postmark = require('postmark')('2bae114c-d0c9-4dbc-a55c-dd0f66f1c8d6');
 
@@ -22,6 +26,12 @@ var onerror = function(response) {
 		response.end(err.message);
 	}
 };
+var respond = function(response, selection, statusCode) {
+	return function(data) {
+		response.writeHead(statusCode || 200, {'content-type':'application/json'});
+		response.end(JSON.stringify(data[selection]));
+	}
+}
 //todo: add logging to see what is happending
 //todo: fix on error
 server.get('/', function(request, response) {
@@ -65,48 +75,18 @@ server.get('/upload/dummy', function(request, response) {
 });
 
 server.get('/{id}/mail', function(request, response) {
-	var query;
-	if (request.params.id.indexOf('@') === -1)
-		query = {'_id': request.params.id.slice(1)};
-	else
-		query = {'mail.From' : request.params.id};
-
-	db.one(query, common.fork(onerror(response),
-		function(data) {
-			response.writeHead(200, {'content-type':'application/json'});
-			response.end(JSON.stringify(data.mail, null, '\t'));		
-		})
-	);
+	db.one({'_id': request.params.id.slice(1)}, {mail: 1}, common.fork(onerror(response), respond(response, 'mail')));
 });
 
 server.get('/{id}/readings', function(request, response) {
-	var query;
-	if (request.params.id.indexOf('@') === -1)
-		query = {'_id': request.params.id.slice(1)};
-	else
-		query = {'mail.From' : request.params.id};
-
-	db.one(query, common.fork(onerror(response),
-		function(data) {
-			response.writeHead(200, {'content-type':'application/json'});
-			response.end(JSON.stringify(data.readings.data, null, '\t'));		
-		})
-	);
+	db.one({'_id': request.params.id.slice(1)}, {readings: 1}, common.fork(onerror(response), respond(response, 'readings')));
 });
 
-server.get('/{id}/readings/day', function(request, response) {
-	var query;
-	if (request.params.id.indexOf('@') === -1)
-		query = {'_id': request.params.id.slice(1)};
-	else
-		query = {'mail.From' : request.params.id};
-
-	db.one(query, common.fork(onerror(response),
-		function(data) {
-			response.writeHead(200, {'content-type':'application/json'});
-			response.end(JSON.stringify(data.readings.day, null, '\t'));		
-		})
-	);
+server.get('/all', function(request, response) {
+	db.many({}, {'mail.From':1}, common.fork(onerror(response), function(data) {
+		response.writeHead(200, {'content-type':'application/json'});
+		response.end(JSON.stringify(data));
+	}));
 });
 
 server.get('/js/*', file('./js/{*}'));
@@ -115,29 +95,7 @@ server.get('/css/*', file('./css/{*}'));
 
 server.get('/html/*', file('./html/{*}'));
 
-server.get(/^\/([\w\s._]+@[\w\s._]+)/, function(request, response) {
-	var id = request.params[1];
-
-	common.step([
-		function(next) {
-			if (id.indexOf('@') === -1)
-				db.one({'_id' : id}, next);
-			else
-				db.one({'mail.From' : id}, next);
-		},
-		function(data, next) {
-			if (!data) {
-				onerror(response)('no data');
-				return;
-			}
-			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
-		},
-		function(src) {
-			response.writeHead(200, {'content-type':'text/html'});	
-			response.end(src);
-		}
-	], onerror(response));
-});
+server.get('/i{id}/week', file('./html/week.html'));
 
 server.get('/i{id}', function(request, response) {
 	common.step([
@@ -149,7 +107,11 @@ server.get('/i{id}', function(request, response) {
 				onerror(response)('no data');
 				return;
 			}
-			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(data.readings.day)))}, next);
+			var days = _.groupBy(data.readings.data, function(reading) {
+			return reading.dayId;
+			});
+
+			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(days)))}, next);
 		},
 		function(src) {
 			response.writeHead(200, {'content-type':'text/html'});	

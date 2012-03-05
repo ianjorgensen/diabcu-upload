@@ -1,0 +1,174 @@
+#frame {
+  padding-left: 15px;
+}
+
+.week {
+	display: block;
+	background: #DEE4F2;
+	border: 3px solid #DEE4F2;	
+	width: 43px; /* media queries change the size of the circles? */
+	height: 44px;
+	margin: 10px;
+	border-radius: 35px;/*14px;*/
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen and (max-width : 320px) {
+/*@media screen and (max-width: 510px) {*/
+	.week {
+		width: 22px;
+		margin: 6px;
+		height: 22px;
+	}
+}
+
+.day {
+		float: left;
+		border: 1px solid transparent;
+	}
+	.today {
+		border-color: #ADADFF !important;
+	}
+	.future {
+		background: #F3F6FC !important;
+		border-color: #F3F6FC !important;
+	}
+	.dot:hover {
+		border-color: #999 !important;
+	}
+	.future:hover {
+		border-color: #F3F6FC !important;
+	}
+	.good {
+		background: #9BD99B !important;
+		border-color: #9BD99B !important;
+	}
+	#good {
+		color: #9BD99B;
+	}
+	.ok {
+		background: #FEEDA5 !important;
+		border-color: #FEEDA5 !important;
+	}
+	#ok {
+		color: #FEEDA5;
+	}
+	.bad {
+		background: #FF9794 !important;
+		border-color: #FF9794 !important;
+	}
+	#bad {
+		color: #FF9794;
+	}
+	.details {
+		float: left;
+		width: 475px;
+		height: 100px;
+		background: #FFEBE5;
+		margin-left: 10px;
+	}
+	.dot {
+		display: block;
+		background: #DEE4F2;
+		border: 3px solid #DEE4F2;
+		
+		width: 43px; /* media queries change the size of the circles? */
+		height: 44px;
+		margin: 10px;
+		border-radius: 35px;/*14px;*/
+	}
+	.day text {
+		width: 47px;
+		height: 3px;
+		display: block;
+		margin: 10px;
+		text-align: center;
+		color: #8193B6;
+		font-family: helvetica;
+		font-size: 13px;
+		padding-left: 1px;
+	}
+	.arrow-up {
+		width: 0;
+		height: 0;
+		border-left: 8px solid transparent;
+		border-right: 8px solid transparent;
+		border-bottom: 8px solid #FFEBE5;
+	}
+	.clear {
+		clear: both;
+	}
+	#footer {
+		text-align: center;
+	  width: 200px;
+	  display: block;
+	  margin-left: auto;
+	  margin-right: auto;
+	}
+	#footer a {
+		font-family: helvetica;
+		text-decoration: none;
+		color: #8193B6;
+		font-size: 13px;
+	}
+	#target {
+		font-family: helvetica;
+		color: #8193B6;
+		font-size: 13px;
+		padding: 10px;
+	}
+	#target div {
+		padding: 0 10px 10px 10px;
+	}
+	#target ul {
+		padding: 0 10px 10px 10px;
+	}
+	#target #fields {
+		padding: 10px;	
+	}
+	.num {
+		padding-top: 2px;
+		padding-left: 1px;
+		font-size: 13px;
+		font-family: helvetica;
+		color: #8193B6;
+		text-align: center;
+		padding-right: 1px;
+	}
+	a {
+		color: blue;
+		cursor: pointer;
+	}
+	/* Smartphones (portrait) ----------- */
+	@media only screen and (max-width : 320px) {
+	/*@media screen and (max-width: 510px) {*/
+		.day text {
+			width: 19px;
+		}
+		.dot {
+			width: 22px;
+			margin: 6px;
+			height: 22px;
+		}
+		.first {
+			margin-left: 5px !important;
+		}
+	}
+	
+	@media only screen and (min-width : 321px) {
+	/*@media screen and (orientation:landscape) {*/
+		.day text {
+			width: 40px;
+		}
+		.dot {
+			width: 35px;
+			margin: 10px;
+			height: 35px;
+		}
+		.first {
+			margin-left: 10px !important;
+		}
+		.sunday {
+			margin-left: 10px;
+		}
+	}
