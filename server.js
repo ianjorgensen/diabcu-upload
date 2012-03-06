@@ -95,30 +95,7 @@ server.get('/css/*', file('./css/{*}'));
 
 server.get('/html/*', file('./html/{*}'));
 
-server.get('/i{id}/week', file('./html/week.html'));
-
-server.get('/i{id}', function(request, response) {
-	common.step([
-		function(next) {
-			db.one({'_id' : request.params.id}, next);
-		},
-		function(data, next) {
-			if (!data) {
-				onerror(response)('no data');
-				return;
-			}
-			var days = _.groupBy(data.readings.data, function(reading) {
-			return reading.dayId;
-			});
-
-			aejs.renderFile('./html/frame.html', {days: calendar.table(_.last(Object.keys(days)))}, next);
-		},
-		function(src) {
-			response.writeHead(200, {'content-type':'text/html'});	
-			response.end(src);
-		}
-	], onerror(response));
-});
+server.get('/i{id}', file('./html/week.html'));
 
 server.all('*', function(request, response) {
 	response.writeHead(404);
