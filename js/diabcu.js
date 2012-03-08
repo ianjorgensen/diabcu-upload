@@ -37,7 +37,6 @@ var diabcu = (function() {
 		var ok = 0;
 		var bad = 0;
 
-
 		$.each(weekdays, function(id, readings) {
 			var veredict = compute(readings, target);
 			if (veredict >= jury.bad) {
@@ -49,7 +48,7 @@ var diabcu = (function() {
 				good = good + 1;
 			}
 		});
-		console.log(good, ok, bad);
+		
 		if (good >= ok && good >= bad) {
 			return colors.good;
 		} 

@@ -87,6 +87,7 @@
 			diabcu.update.days.fill(days, target);
 			return;
 		}
+
 		diabcu.update.weeks.fill(weeks, target);
 	};
 	var setTarget = function() {
@@ -143,11 +144,27 @@
 			};
 		diabcu.update.weeks.fill(weeks, target);
 	};
+	
+	var updateTargetMakup = function(target, unit) {
+		$('.slider-low').attr('min','30');
+		$('.slider-low').attr('max','360');
+		$('.slider-low').attr('step','1');
+		$('.slider-low').attr('value',target.low);
+
+		$('.slider-high').attr('min','30');
+		$('.slider-high').attr('max','360');
+		$('.slider-high').attr('step','1');
+		$('.slider-high').attr('value',target.high);
+	};
 
 	var load = function(result) {
 		data = result;
 		target = diabcu.criteria[result.unit];
-
+		
+		if (result.unit == 'mgdl') {
+			updateTargetMakup(target, result.unit);	
+		}
+		
 		$('#main').show();
 		$('#loading').hide();
 		$('#low').attr('value', target.low);

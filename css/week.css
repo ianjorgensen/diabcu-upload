@@ -259,6 +259,7 @@ label, .ui-btn-text {
 
 .simplemodal-container {
 	padding: 10px;
+	width: 100px;
 	background: white;	
 }
 
