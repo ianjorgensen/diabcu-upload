@@ -29,7 +29,7 @@ var onerror = function(response) {
 var respond = function(response, selection, statusCode) {
 	return function(data) {
 		response.writeHead(statusCode || 200, {'content-type':'application/json'});
-		response.end(JSON.stringify(data[selection]));
+		response.end(JSON.stringify(data[selection], null, '\t'));
 	}
 }
 //todo: add logging to see what is happending
@@ -86,6 +86,19 @@ server.get('/all', function(request, response) {
 	db.many({}, {'mail.From':1}, common.fork(onerror(response), function(data) {
 		response.writeHead(200, {'content-type':'application/json'});
 		response.end(JSON.stringify(data));
+	}));
+});
+
+server.get('/all/nice', function(request, response) {
+	db.many({}, {'mail.From':1}, common.fork(onerror(response), function(data) {
+		var html = '<html><head><title>diabcu | users</title></head><body>';
+		for (var i in data) {
+			var user = data[i];
+			html += '<a href="/i'+ user['_id'] +'">'+ user.mail.From +'</a><br><br>';
+		}
+		html += '</body></html>';
+		response.writeHead(200, {'texh':'html'});
+		response.end(html);
 	}));
 });
 
