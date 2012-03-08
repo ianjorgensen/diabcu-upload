@@ -1,175 +1,44 @@
 <html>
 <head>
-	<title>Diabcu Frame</title>
+	<title>diabcu | frame</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css">
+	<link rel="stylesheet"  href="//code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
 	<link href="/css/week.css" media="all" rel="stylesheet" type="text/css" />
 	<link href="/css/spinner.css" media="all" rel="stylesheet" type="text/css" />
+	
+	
 	<script src="http://www.antarcticstation.org/assets/js/ios-orientationchange-fix.js"></script>
+	<script src="http://www.antarcticstation.org/assets/js/modernizr.js"></script>
 	<script src="/js/jquery.js" ></script>
+	<script src="//code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
 	<script src="/js/underscore.js" ></script>
 	<script src="/js/common.js" ></script>
 	<script src="/js/date.js" ></script>
-	<script src="/js/week.js" ></script>
 	<script src="/js/modal.js" ></script>
-
-	<script>
-	var data;
-	var days;
-	var weeks;
-	var target;
-	var state = 'day';
-
-	var actions = function() {
-		$('#dayZoom').click(function() {
-			if (state == 'day') {
-				return;
-			}
-			state = 'day';
-			load(data);	
-		});
-		$('#weekZoom').click(function() {
-			if (state == 'week') {
-				return;
-			}
-			state = 'week';
-			load(data);
-		});
-		$('#set').click(function() {
-			setTarget();
-		});
-		$('#options-day #lows').click(function() {
-			diabcu.update.days.color(days, target, 'low');
-		});
-		$('#options-day #highs').click(function() {
-			diabcu.update.days.color(days, target, 'high');
-		});
-		$('#options-day #perfects').click(function() {
-			diabcu.update.days.color(days, target, 'perfect');
-		});
-		$('#options-day #colors').click(function() {
-			diabcu.update.days.fill(days, target);
-		});
-		$('#options-day #lowsnum').click(function() {
-			diabcu.update.days.numbers(days, target, 'low');
-		});
-		$('#options-day #highsnum').click(function() {
-			diabcu.update.days.numbers(days, target, 'high');
-		});
-		$('#options-day #percentagenum').click(function() {
-			diabcu.update.days.numbers(days, target, 'percentage');
-		});
-		$('#options-day #countnum').click(function() {
-			diabcu.update.days.numbers(days, target, 'count');
-		});
-		$('#options-day #plainnum').click(function() {
-			diabcu.update.days.numbers(days, target, 'clean');
-		});
-		$('#options-day #datenum').click(function() {
-			diabcu.update.days.numbers(days, target, 'date');
-		});
-		$('#options-day #weightnum').click(function() {
-			diabcu.update.days.numbers(days, target, 'weight');
-		});
-		$('#options-week #plainnum').click(function() {
-			diabcu.update.weeks.numbers(weeks, 'clean');
-		});
-		$('#options-week #weightnum').click(function() {
-			console.log('hi')
-			diabcu.update.weeks.numbers(weeks, 'weight');
-		});
-	};
-
-	var zoom = function() {
-		if(state === 'days') {
-			diabcu.update.days.fill(days, target);
-			return;
-		}
-		diabcu.update.weeks.fill(weeks, target);
-	};
-	var setTarget = function() {
-		target = {low: parseFloat($('#low').attr('value')), high: parseFloat($('#high').attr('value'))};
-
-		if(state === 'days') {
-			diabcu.update.days.fill(days, target);
-			return;
-		}
-		diabcu.update.weeks.fill(weeks, target);
-	};
-
-	var load = function(result) {
-		data = result;
-		target = diabcu.criteria[result.unit];
-
-		$('#main').show();
-		$('#loading').hide();
-		$('#low').attr('value', target.low);
-		$('#high').attr('value', target.high);
-
-		if(state === 'day') {
-			loadDays(result);
-			return;
-		}
-		loadWeeks(result);
-	};
-
-	var loadWeeks = function(result) {
-		$('#weeks').show();
-		$('#days').hide();
-		$('#options-day').hide();
-		$('#options-week').show();
-
-		var weeksGroup = _.groupBy(result.data, function(reading) {
-			return reading.weekId;
-		});
-		weeks = weeksGroup;
-
-		var dots = diabcu.weeks(weeksGroup, target);
-
-		$('#weeks .frame').html('');
-		$.each(dots, function(i,dot) {
-			$('#weeks .frame').append(dot);
-		});
-	};
-
-	var loadDays = function(result) {
-		$('#weeks').hide();
-		$('#days').show();
-		$('#options-day').show();
-		$('#options-week').hide();
-		
-		var daysGroup = _.groupBy(result.data, function(reading) {
-			return reading.dayId;
-		});
-		days = daysGroup;
-
-		var dots = diabcu.days(daysGroup, target);
-
-		$('#days .frame').html('');
-		$.each(dots, function(i,dot) {
-			$('#days .frame').append(dot);
-		});
-
-		$('.data').unbind('click');
-		$('.data').click(function(e) {
-			var id = e.currentTarget.id;
-			$.modal(diabcu.details.day(days[id]), {overlayClose: true});
-		});
-	};
-
-	$(function() {
-		state = 'day';
-		$.get('/' + window.location.pathname.split('/')[1] + '/readings', load);
-		actions();
-	});
-	</script>
-	<!-- Modernizr (rest of the scripts bottom of page) -->
-	<script src="http://www.antarcticstation.org/assets/js/modernizr.js"></script>
+	<script src="/js/diabcu.js" ></script>
+	<script src="/js/week.js" ></script>
 </head>
 <body>
-	<div id='main'>
+<div data-role="page">
+	<div data-role="header">
+		<h1>Page Title</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<div id='main'>
 		<div id='days'>
+			<div class='header'>
+				<div class='day sunday'><text>MON</text></div>
+				<div class='day'><text>TUE</text></div>
+				<div class='day'><text>WED</text></div>
+				<div class='day'><text>THU</text></div>
+				<div class='day'><text>FRI</text></div>
+				<div class='day'><text>SAT</text></div>
+				<div class='day'><text>SUN</text></div>
+				<div class='clear'></div>
+			</div>
 			<div class='frame'>
 			</div>
 		</div>
@@ -178,69 +47,83 @@
 			</div>
 		</div>
 		<div id='target'>
+	 		<div id='fileds'>
+	      <div data-role="fieldcontain">
+   				<label for="slider">Set lower range limit</label>
+   				<input type="range" name="slider" class="slider-low" id="slider" value="4.5" min="0" step="0.5" max="20" data-highlight="true"/>
+				</div>
+				<div data-role="fieldcontain">
+   				<label for="slider">Set upper range limit</label>
+   				<input type="range" name="slider" class="slider-high" id="slider" value="10.5" step="0.5" min="0" max="20" data-highlight="true"/>
+				</div>
+	      <!--<input id='low' type='number' step='0.1' value='4' size='4'/> : <input id='high' type='number' step='0.1' value='10.5' size='4'/> <button type='buton' id='set'>set</button>-->
+	  	</div>
 	 		<div>
 	 			Choose the range you want to keep your blood sugars within. The color of each day is defined as following:
 	 		</div>
+	 		<br>
 	 		<ul>
 	 			<li id='good'>Over 90% readings within range</li>
 	 			<li id='ok'>Over 75% readings within range</li>
 	 			<li id='bad'>Less than 75% readings within range</li>
 	 		</ul>
 	 		</text>
-	  	<div id='fileds'>
-	      <span>Range: </span>
-	      <input id='low' type='number' step='0.1' value='4' size='4'/> : <input id='high' type='number' step='0.1' value='10.5' size='4'/> <button type='buton' id='set'>set</button>
-	  	</div>
-			<div>
-		  	Select your zoom level
-		 	</div>
-	  	<ul>
-		 		<li><a id='dayZoom'>day</a></li>
-		 		<li><a id='weekZoom'>week</a></li>
-		 	</ul>
-	  	<div id='options-day'>
-		  	<div>
-		  		Mark days when you have at least one low or one high reading. Or see that perfect day.
-		  	</div>
-		  	<ul>
-		 			<li><a id='lows'>low</a></li>
-		 			<li><a id='highs'>high</a></li>
-		 			<li><a id='perfects'>perfect</a></li>
-		 			<li><a id='colors'>colors</a></li>
-		 		</ul>
-		 		<div>
-		  		Choose what information gets displayed inside of each day.
-		  	</div>
-		  	<ul>
-		 			<li><a id='lowsnum'>low</a> number of low readings</li>
-		 			<li><a id='highsnum'>high</a> number of high readings</li>
-		 			<li><a id='percentagenum'>percentage</a> % of readings withing range</li>
-		 			<li><a id='countnum'>count</a> number of readings taken</li>
-		 			<li><a id='datenum'>date</a></li>
-		 			<li><a id='plainnum'>plain</a></li>
-		 		</ul>
+	  	<fieldset data-role="controlgroup" data-type="horizontal" class="horizontal">
+				<legend>Select the zoom level:</legend>
+			     	<input type="radio" name="radio-choice-12" id="choice-view-day" value="choice-1" checked="checked"/>
+			     	<label for="choice-view-day">Day</label>
+			     	<input type="radio" name="radio-choice-12" id="choice-view-week" value="choice-2"/>
+			     	<label for="choice-view-week">Week</label>
+			</fieldset>
+		 	<div data-role="collapsible" data-content-theme="c">
+  		 <h3>Options</h3>
+   		 <div id='options-day'>
+		  	<fieldset data-role="controlgroup" data-type="horizontal" class="horizontal" id="colorchoice">
+					<legend>Mark days when you have at least one low or one high reading. Or see that perfect day</legend>
+				     	<input type="radio" name="radio-choice-11" id="choice-target" value="choice-1" checked="true"/>
+				     	<label for="choice-target">Target</label>
+				     	<input type="radio" name="radio-choice-11" id="choice-lows" value="choice-2"/>
+				     	<label for="choice-lows">Lows</label>
+				     	<input type="radio" name="radio-choice-11" id="choice-highs" value="choice-3"/>
+				     	<label for="choice-highs">Highs</label>
+				     	<input type="radio" name="radio-choice-11" id="choice-perfect" value="choice-4"/>
+				     	<label for="choice-perfect">Perfect</label>
+				</fieldset>
+		  	<fieldset data-role="controlgroup">
+					<legend>Choose what information gets displayed inside of each day.</legend>
+							<input type="radio" name="radio-choice-10" id="choice-num-empty" value="choice-1" checked="checked"/>
+				     	<label for="choice-num-empty">empty</label>
+				     	<input type="radio" name="radio-choice-10" id="choice-num-low" value="choice-2"/>
+				     	<label for="choice-num-low">number of low readings</label>
+				     	<input type="radio" name="radio-choice-10" id="choice-num-high" value="choice-3"/>
+				     	<label for="choice-num-high">number of high readings</label>
+				     	<input type="radio" name="radio-choice-10" id="choice-num-percent" value="choice-4"/>
+				     	<label for="choice-num-percent">% of readings withing range</label>
+				     	<input type="radio" name="radio-choice-10" id="choice-num-date" value="choice-5"/>
+				     	<label for="choice-num-date">date</label>
+				</fieldset>
+			</div>
+			<div id='options-week'>
+				<fieldset data-role="controlgroup">
+					<legend>Choose what information gets displayed inside of each week.</legend>
+							<input type="radio" name="radio-choice-13" id="choice-num-week-empty" value="choice-1" checked="checked"/>
+				     	<label for="choice-num-week-empty">empty</label>
+				     	<input type="radio" name="radio-choice-13" id="choice-num-week-weight" value="choice-2"/>
+				     	<label for="choice-num-week-weight">your average weight for that week</label>
+				</fieldset>
 	 		</div>
-	 		<div id='options-week'>
-				<div>
-		  		Choose what information gets displayed inside of each week.
-		  	</div>
-		  	<ul>
-		 			<li><a id='weightnum'>weight</a> your weight in kg for that week</li>
-		 			<li><a id='plainnum'>plain</a></li>
-		 		</ul>
-	 		</div>
-		</div>
+	 	</div>
 	</div>
 	<div id='loading'>
 		<h1>diabcu</h1>
 		<div id='spinner'>
 			<div id="circleG">
-			<div id="circleG_1" class="circleG">
-			</div>
-			<div id="circleG_2" class="circleG">
-			</div>
-			<div id="circleG_3" class="circleG">
-			</div>
+				<div id="circleG_1" class="circleG">
+				</div>
+				<div id="circleG_2" class="circleG">
+				</div>
+				<div id="circleG_3" class="circleG">
+				</div>
 			</div>
 			<!--<div id="bowlG">
 				<div id="bowl_ringG">
@@ -251,5 +134,11 @@
 			</div>-->
 		</div>
 	</div>
+	</div><!-- /content -->
+
+	<div data-role="footer">
+		<h4>Page Footer</h4>
+	</div><!-- /footer -->
+</div><!-- /page -->
 </body>
 </html>
