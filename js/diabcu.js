@@ -15,7 +15,7 @@ var diabcu = (function() {
 		today: '#276686', //#ADADFF
 		empty: '#DEE4F2',
 		high: '#9C2C52',
-		blank: 'white'
+		blank: '#CCD5EB'
 	};
 
 	var brush = function(veredict) {
