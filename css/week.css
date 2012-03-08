@@ -7,6 +7,10 @@
 	height: 10px;
 }
 
+.ui-checkbox-on .ui-icon, .ui-radio-on .ui-icon {
+	background-color: #327344;
+}
+
 #slider-label, .ui-controlgroup-label {
 	font-family: helvetica !important;
 	color: #8193B6 !important;
