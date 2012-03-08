@@ -284,7 +284,7 @@ var diabcu = (function() {
 						num = count;
 						break;
 					}
-					$('#' + id + ' .num').text(num);	
+					$('#' + id + ' .num').text(num || '');	
 				});
 			},
 			color: function(days, target, state) {
