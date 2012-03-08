@@ -3,7 +3,7 @@
 	var weeks;
 	var target;
 	var state = 'day';
-	var status = {
+	var viewChoice = {
 		color: 'target',
 		num: 'empty'
 	};
@@ -28,56 +28,56 @@
 		$('.slider-low').change(setTarget);
 		
 		$('#options-day #choice-lows').click(function() {
-			status.color = 'low';
+			viewChoice.color = 'low';
 			diabcu.update.days.color(days, target, 'low');
 		});
 		$('#options-day #choice-highs').click(function() {
-			status.color = 'high';
+			viewChoice.color = 'high';
 			diabcu.update.days.color(days, target, 'high');
 		});
 		$('#options-day #choice-perfect').click(function() {
-			status.color = 'perfect';
+			viewChoice.color = 'perfect';
 			diabcu.update.days.color(days, target, 'perfect');
 		});
 		$('#options-day #choice-target').click(function() {
-			status.color = 'target';
+			viewChoice.color = 'target';
 			diabcu.update.days.fill(days, target);
 		});
 
 		$('#options-day #choice-num-low').click(function() {
-			status.num = 'low';
+			viewChoice.num = 'low';
 			diabcu.update.days.numbers(days, target, 'low');
 		});
 		$('#options-day #choice-num-high').click(function() {
-			status.num = 'high';
+			viewChoice.num = 'high';
 			diabcu.update.days.numbers(days, target, 'high');
 		});
 		$('#options-day #choice-num-percent').click(function() {
-			status.num = 'percent';
+			viewChoice.num = 'percent';
 			diabcu.update.days.numbers(days, target, 'percentage');
 		});
 		$('#options-day #choice-num-count').click(function() {
-			status.num = 'count';
+			viewChoice.num = 'count';
 			diabcu.update.days.numbers(days, target, 'count');
 		});
 		$('#options-day #choice-num-empty').click(function() {
-			status.num = 'clean';
+			viewChoice.num = 'clean';
 			diabcu.update.days.numbers(days, target, 'clean');
 		});
 		$('#options-day #choice-num-date').click(function() {
-			status.num = 'date';
+			viewChoice.num = 'date';
 			diabcu.update.days.numbers(days, target, 'date');
 		});
 
-		$('#options-day #weightnum').click(function() {
+		/*$('#options-day #weightnum').click(function() {
 			diabcu.update.days.numbers(days, target, 'weight');
-		});
+		});*/
 		$('#options-week #choice-num-week-empty').click(function() {
-			status.num = 'clean';
+			viewChoice.num = 'clean';
 			diabcu.update.weeks.numbers(weeks, 'clean');
 		});
 		$('#options-week #choice-num-week-weight').click(function() {
-			status.num = 'weight';
+			viewChoice.num = 'weight';
 			diabcu.update.weeks.numbers(weeks, 'weight');
 		});
 	};
@@ -96,9 +96,8 @@
 			high: parseFloat($('.slider-high').attr('value'))
 		};
 
-		console.log(status);
 		if(state === 'day') {
-			switch(status.color) {
+			switch(viewChoice.color) {
 				case 'low':
 				diabcu.update.days.color(days, target, 'low');
 				break;
@@ -112,7 +111,7 @@
 				diabcu.update.days.fill(days, target);
 				break;
 			};
-			switch(status.num) {
+			switch(viewChoice.num) {
 				case 'low':
 				diabcu.update.days.numbers(days, target, 'low');
 				break;
@@ -134,7 +133,7 @@
 			};
 			return;
 		}
-		switch(status.num) {
+		switch(viewChoice.num) {
 				case 'weight':
 				diabcu.update.weeks.numbers(days, target, 'weight');
 				break;
