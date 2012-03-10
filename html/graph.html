@@ -1,0 +1,55 @@
+<! doctype html>
+<html>
+<head>
+	<script src="/js/jquery.js" ></script>
+	<script src="/js/raphael-2.0.2.min.js" ></script>
+	<script src="/js/underscore.js" ></script>
+	<script src="/js/readings.js" ></script>
+	<script src="/js/date.js" ></script>
+	<script src="/js/common.js" ></script>
+	<script>
+
+	var paper;
+	$(function() {
+		paper = Raphael(10,10, 1600, 36000);
+
+		days = _.groupBy(readings.data, function(reading) {
+			return reading.dayId;
+		});
+
+		var dis = 10;
+		$.each(days, function(id, day) {
+			var data = [];
+
+			$.each(day.reverse(), function(i, reading) {
+				var date = new Date(reading.timestamp);
+				
+				data.push({
+					x: (date.getHours() || 24) * 60 + date.getMinutes() ,
+					y: 300 - parseInt(parseFloat(reading.bg == 'HI' ? 32 : reading.bg) * 10) + dis,
+					text: date.getHours() + ':' + date.getMinutes() + ' ' + reading.bg
+				});
+			});
+			console.log(data);
+
+			
+			var path = 'M' + data[0].x + ',' + data[0].y;
+
+			//var line = paper.path(format('M0,{0}L1600,{0}', dis));
+			
+			//var line = paper.path(format('M0,{0}L1600,{0}', dis + 40));
+			//var line = paper.path(format('M0,{0}L1600,{0}', dis + 105));
+			
+			$.each(data, function(i, point) {
+				var c = paper.circle(point.x, point.y, 20);
+				var t = paper.text(point.x, point.y - 40, point.text);
+				path += 'L' + point.x + ',' + point.y;
+			});
+			
+			var line = paper.path(path);
+			dis += 300;
+		});  
+	});
+	</script>
+</head>
+</html>
