@@ -51,8 +51,6 @@
 					text: date.getHours() + ':' + date.getMinutes() + ' ' + reading.bg
 				});
 			});
-			console.log(data);
-
 			
 			var path = 'M' + data[0].x + ',' + data[0].y;
 
@@ -284,7 +282,7 @@
 				var dates = id.split('-');
 				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 				var date = dates[0] + ' ' + months[parseInt(dates[1])] + ' ' + dates[2];
-				console.log(date);
+				
 				weeksDays[new Date(date).getDay()].hover(mouseover, mouseout);
 			});
 
