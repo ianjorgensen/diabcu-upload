@@ -106,11 +106,11 @@ server.get('/js/*', file('./js/{*}'));
 
 server.get('/css/*', file('./css/{*}'));
 
+server.get('/html/graph.html', file('./html/old-graph.html'));
+
 server.get('/html/*', file('./html/{*}'));
 
 server.get('/i{id}', file('./html/week.html'));
-
-server.get('/html/graph.html', file('./html/old-graph.html'));
 
 server.get('/i{id}/graph', file('./html/graph.html'));
 
