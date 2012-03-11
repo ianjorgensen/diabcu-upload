@@ -10,6 +10,7 @@
 
 	var actions = function() {
 		$('#choice-view-day').click(function() {
+			$('#legend').text('');
 			if (state == 'day') {
 				return;
 			}
@@ -17,6 +18,7 @@
 			load(data);	
 		});
 		$('#choice-view-week').click(function() {
+			$('#legend').text('');
 			if (state == 'week') {
 				return;
 			}
@@ -45,26 +47,32 @@
 		});
 
 		$('#options-day #choice-num-low').click(function() {
+			$('#legend').text('Number of low readings');
 			viewChoice.num = 'low';
 			diabcu.update.days.numbers(days, target, 'low');
 		});
 		$('#options-day #choice-num-high').click(function() {
+			$('#legend').text('Number of high readings');
 			viewChoice.num = 'high';
 			diabcu.update.days.numbers(days, target, 'high');
 		});
 		$('#options-day #choice-num-percent').click(function() {
 			viewChoice.num = 'percent';
+			$('#legend').text('Percentage of readgins within range');
 			diabcu.update.days.numbers(days, target, 'percentage');
 		});
 		$('#options-day #choice-num-count').click(function() {
 			viewChoice.num = 'count';
+			$('#legend').text('Number of readings');
 			diabcu.update.days.numbers(days, target, 'count');
 		});
 		$('#options-day #choice-num-empty').click(function() {
 			viewChoice.num = 'clean';
+			$('#legend').text('');
 			diabcu.update.days.numbers(days, target, 'clean');
 		});
 		$('#options-day #choice-num-date').click(function() {
+			$('#legend').text('Date');
 			viewChoice.num = 'date';
 			diabcu.update.days.numbers(days, target, 'date');
 		});
@@ -74,9 +82,11 @@
 		});*/
 		$('#options-week #choice-num-week-empty').click(function() {
 			viewChoice.num = 'clean';
+			$('#legend').text('');
 			diabcu.update.weeks.numbers(weeks, 'clean');
 		});
 		$('#options-week #choice-num-week-weight').click(function() {
+			$('#legend').text('Avergae weight per week');
 			viewChoice.num = 'weight';
 			diabcu.update.weeks.numbers(weeks, 'weight');
 		});

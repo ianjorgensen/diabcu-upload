@@ -28,6 +28,7 @@
 
 	<div data-role="content">	
 		<div id='main'>
+		<div id='legend'></div>
 		<div id='days'>
 			<div class='header'>
 				<div class='day sunday'><text>MON</text></div>
@@ -47,8 +48,15 @@
 			</div>
 		</div>
 		<div id='target'>
+	 		<fieldset data-role="controlgroup" data-type="horizontal" class="horizontal">
+				<legend>Select the zoom level:</legend>
+			     	<input type="radio" name="radio-choice-12" id="choice-view-day" value="choice-1" checked="checked"/>
+			     	<label for="choice-view-day">Day</label>
+			     	<input type="radio" name="radio-choice-12" id="choice-view-week" value="choice-2"/>
+			     	<label for="choice-view-week">Week</label>
+			</fieldset>
 	 		<div data-role="collapsible" data-content-theme="c">
-	 			<h3>Range</h3>
+	 			<h3>Targets</h3>
 		 		<div id='fileds'>
 		      <div data-role="fieldcontain">
 	   				<label for="slider">Set lower range limit</label>
@@ -71,15 +79,8 @@
 		 		</ul>
 		 		</text>
 	 		</div>
-	  	<fieldset data-role="controlgroup" data-type="horizontal" class="horizontal">
-				<legend>Select the zoom level:</legend>
-			     	<input type="radio" name="radio-choice-12" id="choice-view-day" value="choice-1" checked="checked"/>
-			     	<label for="choice-view-day">Day</label>
-			     	<input type="radio" name="radio-choice-12" id="choice-view-week" value="choice-2"/>
-			     	<label for="choice-view-week">Week</label>
-			</fieldset>
 		 	<div data-role="collapsible" data-content-theme="c">
-  		 <h3>Options</h3>
+  		 <h3>Explore</h3>
    		 <div id='options-day'>
 		  	<fieldset data-role="controlgroup" data-type="horizontal" class="horizontal" id="colorchoice">
 					<legend>Mark days when you have at least one low or one high reading. Or see that perfect day</legend>
@@ -100,6 +101,8 @@
 				     	<label for="choice-num-low">number of low readings</label>
 				     	<input type="radio" name="radio-choice-10" id="choice-num-high" value="choice-3"/>
 				     	<label for="choice-num-high">number of high readings</label>
+							<input type="radio" name="radio-choice-10" id="choice-num-count" value="choice-3"/>
+				     	<label for="choice-num-count">number of readings</label>
 				     	<input type="radio" name="radio-choice-10" id="choice-num-percent" value="choice-4"/>
 				     	<label for="choice-num-percent">% of readings withing range</label>
 				     	<input type="radio" name="radio-choice-10" id="choice-num-date" value="choice-5"/>

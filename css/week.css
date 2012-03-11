@@ -1,3 +1,11 @@
+#legend {
+	text-align: center;
+	color: #8193B6;
+	font-family: helvetica;
+	font-size: 15px;
+	padding-top: 13px;
+
+}
 #weeks .frame {
 	margin-left: 125px;
 }

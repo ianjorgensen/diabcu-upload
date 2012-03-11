@@ -1,6 +1,7 @@
 <! doctype html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<script src="/js/jquery.js" ></script>
 	<script src="/js/raphael-2.0.2.min.js" ></script>
 	<script src="/js/underscore.js" ></script>
@@ -10,23 +11,43 @@
 	<script>
 
 	var paper;
-	$(function() {
-		paper = Raphael(10,10, 1600, 36000);
+	var count = 0;
+	var good = 0;
 
+	var timeofday = function() {
+		paper = Raphael(10,10, 1600, 36000);
 		days = _.groupBy(readings.data, function(reading) {
 			return reading.dayId;
 		});
 
-		var dis = 10;
+		var offest = 1000;
+		var target = {
+			low: 4,
+			high: 10.5
+		};
+
+		paper.path(format('M0,{0}L1600,{0}',offest - parseInt(target.low * 10)));
+		paper.path(format('M0,{0}L1600,{0}',offest - parseInt(target.high * 10)));
+
+		var dis = 0;
+		max = 0;
 		$.each(days, function(id, day) {
 			var data = [];
 
 			$.each(day.reverse(), function(i, reading) {
 				var date = new Date(reading.timestamp);
 				
+				var bg = parseFloat(reading.bg == 'HI' ? 32 : reading.bg);
+
+				if(bg > target.low && bg < target.high) {
+					good++;
+				}
+				count++;
+
 				data.push({
 					x: (date.getHours() || 24) * 60 + date.getMinutes() ,
-					y: 300 - parseInt(parseFloat(reading.bg == 'HI' ? 32 : reading.bg) * 10) + dis,
+					y: offest - parseInt(bg * 10) + dis,
+					//y: 300 - 0 + dis,
 					text: date.getHours() + ':' + date.getMinutes() + ' ' + reading.bg
 				});
 			});
@@ -35,21 +56,252 @@
 			
 			var path = 'M' + data[0].x + ',' + data[0].y;
 
-			//var line = paper.path(format('M0,{0}L1600,{0}', dis));
-			
-			//var line = paper.path(format('M0,{0}L1600,{0}', dis + 40));
-			//var line = paper.path(format('M0,{0}L1600,{0}', dis + 105));
-			
 			$.each(data, function(i, point) {
-				var c = paper.circle(point.x, point.y, 20);
+				var c = paper.circle(point.x, point.y, 2);
+
+				if(point.x > max) {
+					max = point.x;
+					circle = c;
+				}
+				
+				//var t = paper.text(point.x, point.y - 40, point.text);
+				path += 'L' + point.x + ',' + point.y;
+			});
+			
+
+			//var line = paper.path(path);
+			dis += 0;
+		});  
+	}
+
+	var linebyday = function() {
+		paper = Raphael(10,10, 1600, 36000);
+		days = _.groupBy(readings.data, function(reading) {
+			return reading.dayId;
+		});
+
+		var offest = 1500;
+		var target = {
+			low: 4,
+			high: 10.5
+		};
+
+		paper.path(format('M0,{0}L1600,{0}',offest - parseInt(target.low * 10)));
+		paper.path(format('M0,{0}L1600,{0}',offest - parseInt(target.high * 10)));
+
+		var dis = 0;
+		max = 0;
+		$.each(days, function(id, day) {
+			var data = [];
+
+			$.each(day.reverse(), function(i, reading) {
+				var date = new Date(reading.timestamp);
+				
+				var bg = parseFloat(reading.bg == 'HI' ? 32 : reading.bg);
+
+				if(bg > target.low && bg < target.high) {
+					good++;
+				}
+				count++;
+
+				data.push({
+					x: (date.getHours() || 24) * 60 + date.getMinutes() ,
+					y: offest - parseInt(bg * 10) + dis,
+					text: date.getHours() + ':' + date.getMinutes() + ' ' + reading.bg
+				});
+			});
+			
+			var path = 'M' + data[0].x + ',' + data[0].y;
+			$.each(data, function(i, point) {
+				var c = paper.circle(point.x, point.y, 2);
 				var t = paper.text(point.x, point.y - 40, point.text);
 				path += 'L' + point.x + ',' + point.y;
 			});
 			
+
 			var line = paper.path(path);
 			dis += 300;
 		});  
+	}
+
+	var daylevels = function() {
+		paper = Raphael(10,10, 1600, 36000);
+		days = _.groupBy(readings.data, function(reading) {
+			return reading.dayId;
+		});
+
+		var offest = 400;
+		var target = {
+			low: 4,
+			high: 10.5
+		};
+
+		var path = 'M{0},0L{0},800';
+		paper.path(format(path,parseInt(target.low * 10)));
+		paper.path(format(path,parseInt(target.high * 10)));
+
+		var dis = 0;
+		max = 0;
+		$.each(days, function(id, day) {
+			var data = [];
+
+			$.each(day.reverse(), function(i, reading) {
+				var date = new Date(reading.timestamp);
+				
+				var bg = parseFloat(reading.bg == 'HI' ? 32 : reading.bg);
+
+				if(bg > target.low && bg < target.high) {
+					good++;
+				}
+				count++;
+
+				data.push({
+					x: parseInt(bg * 10),
+					y: 200 + dis,
+					//y: 300 - 0 + dis,
+					text: date.getHours() + ':' + date.getMinutes() + ' ' + reading.bg
+				});
+			});
+			
+			var path = 'M' + data[0].x + ',' + data[0].y;
+
+			$.each(data, function(i, point) {
+				var c = paper.circle(point.x, point.y, 2);
+
+				if(point.x > max) {
+					max = point.x;
+					circle = c;
+				}
+				
+				path += 'L' + point.x + ',' + point.y;
+			});
+			
+
+			//var line = paper.path(path);
+			dis += 5;
+		});  
+	}
+
+	var linesbyweek = function(readings) {
+		paper = Raphael(10,0, 460, 4200);
+
+		var weeks = _.groupBy(readings.data, function(reading) {
+			return reading.weekId;
+		});
+
+
+		var offset = 300;
+		var target = {
+			low: 4,
+			high: 10.5
+		};
+
+		var dis = 0;
+
+		$.each(weeks, function(weekId, week) {
+			days = _.groupBy(week, function(reading) {
+				return reading.dayId;
+			});
+
+			var dayIndex = -1;
+			var r = paper.rect(0,offset - parseInt(target.high * 10) + dis, 1600, 65);
+			r.attr("fill", "#D6FFD6");
+			//r.attr("opacity", "0.5");
+			r.attr('stroke','white');
+			var weeksDays = [
+				paper.text(50 + 300,dis + 300, 'SUN'),
+				paper.text(50,dis + 300, 'MON'),
+				paper.text(50 + 50,dis + 300, 'TUE'),
+				paper.text(50 + 100,dis + 300, 'WED'),
+				paper.text(50 + 150,dis + 300, 'THU'),
+				paper.text(50 + 200,dis + 300, 'FRI'),
+				paper.text(50 + 250,dis + 300, 'SAT')
+			];
+			var opacity = 0.3;
+			$.each(weeksDays, function(i, day) {
+				day.attr({fill: 'gray', "font-size": 13, "font-family": "Arial, Helvetica, sans-serif" });
+			});
+			$.each(days, function(id, day) {
+				var data = [];
+				
+				dayIndex++;
+				
+				$.each(day.reverse(), function(i, reading) {
+					var date = new Date(reading.timestamp);
+
+					var bg = parseFloat(reading.bg == 'HI' ? 32 : reading.bg);
+
+					if (readings.unit == 'mgdl') {
+						bg = bg/18;
+					}
+					
+					if(bg > target.low && bg < target.high) {
+						good++;
+					}
+					count++;
+
+					data.push({
+						x: 4 + ((date.getHours() || 24) * 60 + date.getMinutes() - 60)/3.2 ,
+						y: (offset - parseInt(bg * 10) + dis),
+						text: (date.getHours() || 24) + ':' + date.getMinutes() + ' ' + bg
+					});
+				});
+				
+				var path = 'M0,{0}L1600,{0}';
+				var set = paper.set();
+				//paper.path(format(path,offset - parseInt(target.low * 10) + dis));
+				//paper.path(format(path,offset - 0 + dis));
+				// regular rectangle
+
+				
+				var path = 'M' + data[0].x + ',' + data[0].y;
+				$.each(data, function(i, point) {
+					var c = paper.circle(point.x, point.y, 2);
+					c.attr ("stroke", "gray");
+					c.attr ("opacity", opacity);
+					c.attr('fill','gray');
+					
+					set.push(c);
+					path += 'L' + point.x + ',' + point.y;
+				});
+				
+				
+				var line = paper.path(path);
+
+
+				var mouseover = function (event) {
+				  set.attr({stroke: 'gray', opacity: 1, 'stroke-width': 2});
+				  this.attr({fill: 'black'});
+				}
+				var mouseout = function (event) {
+				  set.attr({stroke: 'gray', opacity: opacity, 'stroke-width': 1});
+				  this.attr({fill: 'gray'});
+				}
+
+				line.attr({stroke: 'gray', opacity: opacity, 'stroke-width': 1});
+				set.push(line);
+				
+				var dates = id.split('-');
+				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+				var date = dates[0] + ' ' + months[parseInt(dates[1])] + ' ' + dates[2];
+				console.log(date);
+				weeksDays[new Date(date).getDay()].hover(mouseover, mouseout);
+			});
+
+			dis += 300;
+		});  
+	}
+
+	$(function() {
+		//	timeofday();
+		//daylevels();
+		//linebyday();
+		$.get('/' + window.location.pathname.split('/')[1] + '/readings', linesbyweek);
+		//var t = paper.text(400,10, Math.round(good * 100/count) + '% readings within range');
+		//t.attr({ "font-size": 20, "font-family": "Arial, Helvetica, sans-serif" });
 	});
 	</script>
 </head>
+<body>
+</body>
 </html>

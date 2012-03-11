@@ -110,6 +110,8 @@ server.get('/html/*', file('./html/{*}'));
 
 server.get('/i{id}', file('./html/week.html'));
 
+server.get('/i{id}/graph', file('./html/graph.html'));
+
 server.all('*', function(request, response) {
 	response.writeHead(404);
 	response.end('404');
