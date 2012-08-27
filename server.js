@@ -65,9 +65,12 @@ server.post('/upload', function(request, response) {
 });
 
 server.get('/upload/dummy', function(request, response) {
-	var readings = diabcu.parse(data.mail);
+	var readings = diabcu.parse(require('fs').readFileSync('./lib/atach.txt','ascii'));
+	
+	console.log({mail:data.mail, readings:readings});
 	db.save({'mail.From': data.mail.From}, {mail:data.mail, readings:readings}, common.fork(onerror(response),
 		function() {
+			console.log('lo');
 			response.writeHead(200);
 			response.end('ok');
 		})
